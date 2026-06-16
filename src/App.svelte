@@ -19,7 +19,19 @@
     return () => clearInterval(interval);
   });
 
-  let sortedBrands = $derived(
+  let coffeeBrands = $derived(
+    [...brandStore.states]
+      .filter(b => b.category === '咖啡')
+      .sort((a, b) => a.rank - b.rank)
+  );
+
+  let teaBrands = $derived(
+    [...brandStore.states]
+      .filter(b => b.category === '新茶饮')
+      .sort((a, b) => a.rank - b.rank)
+  );
+
+  let overallBrands = $derived(
     [...brandStore.states].sort((a, b) => a.rank - b.rank)
   );
 
@@ -57,12 +69,73 @@
     </div>
   </header>
 
-  <main class="card-area">
-    {#each sortedBrands as brand (brand.brand)}
-      <div animate:flip={{ duration: 600 }}>
-        <BrandCard state={brand} />
+  <main class="main-content">
+    <div class="top-rank-section">
+      <div class="section-header">
+        <div class="section-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <span class="section-title">实时总榜</span>
+        <span class="section-count">{overallBrands.length} 品牌</span>
       </div>
-    {/each}
+      <div class="brand-list overall-list">
+        {#each overallBrands as brand (brand.brand)}
+          <div animate:flip={{ duration: 600 }}>
+            <BrandCard state={brand} />
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <div class="category-sections">
+      <div class="category-section">
+        <div class="section-header category-header">
+          <div class="category-icon coffee-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 8h1a4 4 0 1 1 0 8h-1"/>
+              <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+              <line x1="6" y1="2" x2="6" y2="4"/>
+              <line x1="10" y1="2" x2="10" y2="4"/>
+              <line x1="14" y1="2" x2="14" y2="4"/>
+            </svg>
+          </div>
+          <span class="section-title">咖啡类目</span>
+          <span class="section-count">{coffeeBrands.length} 品牌</span>
+        </div>
+        <div class="brand-list">
+          {#each coffeeBrands as brand (brand.brand)}
+            <div animate:flip={{ duration: 600 }}>
+              <BrandCard state={brand} compact={true} />
+            </div>
+          {/each}
+        </div>
+      </div>
+
+      <div class="category-section">
+        <div class="section-header category-header">
+          <div class="category-icon tea-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 2.1c2 0 3.5 1.5 3.5 3.5s-1.5 3.5-3.5 3.5"/>
+              <path d="M9.9 2.1c-2 0-3.5 1.5-3.5 3.5s1.5 3.5 3.5 3.5"/>
+              <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"/>
+              <path d="M12 12v9"/>
+              <path d="M7.5 12a4.5 4.5 0 0 1 9 0"/>
+            </svg>
+          </div>
+          <span class="section-title">新茶饮类目</span>
+          <span class="section-count">{teaBrands.length} 品牌</span>
+        </div>
+        <div class="brand-list">
+          {#each teaBrands as brand (brand.brand)}
+            <div animate:flip={{ duration: 600 }}>
+              <BrandCard state={brand} compact={true} />
+            </div>
+          {/each}
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer class="bottombar">
@@ -210,15 +283,98 @@
     letter-spacing: 0.05em;
   }
 
-  .card-area {
+  .main-content {
     flex: 1;
     padding: 24px 32px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    max-width: 960px;
+    gap: 28px;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
+  }
+
+  .top-rank-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .category-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .category-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px;
+  }
+
+  .category-header {
+    padding-bottom: 8px 4px;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 8px;
+    background: linear-gradient(90deg, #0d1321 0%, transparent 100%);
+    border-radius: 8px;
+  }
+
+  .section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .category-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .coffee-icon {
+    background: #60a5fa20;
+    color: #60a5fa;
+    border: 1px solid #60a5fa40;
+  }
+
+  .tea-icon {
+    background: #34d39920;
+    color: #34d399;
+    border: 1px solid #34d39940;
+  }
+
+  .section-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    letter-spacing: 0.05em;
+  }
+
+  .section-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #64748b;
+    background: #1e293b;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .brand-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
   .bottombar {

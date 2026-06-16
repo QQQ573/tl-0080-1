@@ -6,9 +6,10 @@
 
   interface Props {
     state: BrandState;
+    compact?: boolean;
   }
 
-  let { state }: Props = $props();
+  let { state, compact = false }: Props = $props();
 
   let rankChangeClass = $derived(
     state.rank < state.prevRank
@@ -19,7 +20,7 @@
   );
 </script>
 
-<div class="brand-card" class:rank-up={rankChangeClass === 'rank-up'} class:rank-down={rankChangeClass === 'rank-down'}>
+<div class="brand-card" class:compact={compact} class:rank-up={rankChangeClass === 'rank-up'} class:rank-down={rankChangeClass === 'rank-down'}>
   <div class="card-left">
     <div class="rank-badge" style="background: {state.color}20; color: {state.color}; border: 1px solid {state.color}40;">
       {state.rank}
@@ -30,7 +31,9 @@
     <div class="card-header">
       <div class="brand-dot" style="background: {state.color}; box-shadow: 0 0 8px {state.color}80;"></div>
       <span class="brand-name">{state.brand}</span>
-      <span class="category-tag" style="color: {state.color}; border-color: {state.color}40;">{state.category}</span>
+      {#if !compact}
+        <span class="category-tag" style="color: {state.color}; border-color: {state.color}40;">{state.category}</span>
+      {/if}
       <RankArrow rank={state.rank} prevRank={state.prevRank} />
     </div>
     <div class="index-row">
@@ -40,7 +43,7 @@
   </div>
 
   <div class="card-right">
-    <Sparkline history={state.history} color={state.color} width={220} height={52} />
+    <Sparkline history={state.history} color={state.color} width={compact ? 160 : 240} height={compact ? 40 : 56} />
   </div>
 </div>
 
@@ -56,6 +59,12 @@
     transition: border-color 0.4s ease, box-shadow 0.4s ease;
     position: relative;
     overflow: hidden;
+  }
+
+  .brand-card.compact {
+    padding: 10px 16px;
+    gap: 12px;
+    border-radius: 10px;
   }
 
   .brand-card::before {
@@ -105,6 +114,12 @@
     font-size: 1.1rem;
   }
 
+  .compact .rank-badge {
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
   .card-center {
     flex: 1;
     min-width: 0;
@@ -117,11 +132,21 @@
     margin-bottom: 8px;
   }
 
+  .compact .card-header {
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
   .brand-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
+  }
+
+  .compact .brand-dot {
+    width: 8px;
+    height: 8px;
   }
 
   .brand-name {
@@ -130,6 +155,10 @@
     font-size: 1.05rem;
     color: #e2e8f0;
     letter-spacing: 0.02em;
+  }
+
+  .compact .brand-name {
+    font-size: 0.9rem;
   }
 
   .category-tag {
@@ -147,11 +176,19 @@
     gap: 10px;
   }
 
+  .compact .index-row {
+    gap: 8px;
+  }
+
   .index-label {
     font-family: 'Noto Sans SC', sans-serif;
     font-size: 0.7rem;
     color: #64748b;
     letter-spacing: 0.05em;
+  }
+
+  .compact .index-label {
+    font-size: 0.65rem;
   }
 
   .card-right {
